@@ -1,0 +1,87 @@
+PROGRAM 9: VLAN
+
+Steps to Configure VLAN Using Switch and PCs
+
+Step 1: Create Network Topology
+Open Packet Tracer
+Choose one Switch and four PCs
+Select Fast Ethernet cable
+Connect PC1, PC2, PC3, and PC4 to the switch
+
+Step 2: Configure IP Address for PCs
+
+PC1
+Double click PC1
+Go to Desktop → IP Configuration
+IP Address : 192.168.10.2
+Subnet Mask : 255.255.255.0
+
+PC2
+Double click PC2
+Go to Desktop → IP Configuration
+IP Address : 192.168.10.3
+Subnet Mask : 255.255.255.0
+
+PC3
+Double click PC3
+Go to Desktop → IP Configuration
+IP Address : 192.168.20.2
+Subnet Mask : 255.255.255.0
+
+PC4
+Double click PC4
+Go to Desktop → IP Configuration
+IP Address : 192.168.20.3
+Subnet Mask : 255.255.255.0
+
+Step 3: Configure VLAN on Switch
+
+Double click on the Switch
+Go to CLI tab
+Type the following commands
+
+en
+config
+vlan 10
+name Farooque
+exit
+
+en
+config
+vlan 20
+name Yerri
+exit
+
+Verify VLAN configuration
+
+show vlan
+
+Step 4: Assign Switch Ports to VLANs
+
+en
+config
+
+interface f0/1
+switchport access vlan 10
+exit
+
+interface f0/2
+switchport access vlan 10
+exit
+
+interface f0/3
+switchport access vlan 20
+exit
+
+interface f0/4
+switchport access vlan 20
+exit
+
+exit
+
+Step 5: Simulate the Topology
+
+Switch to Simulation Mode
+Ping PC1 to PC2 (Success)
+Ping PC3 to PC4 (Success)
+Ping between different VLANs (Fail)
