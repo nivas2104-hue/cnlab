@@ -1,0 +1,56 @@
+PROGRAM 5: BULK TRANSFER
+
+#include <string>
+#include <fstream>
+#include "ns3/core-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/network-module.h"
+#include "ns3/packet-sink.h"
+
+using namespace ns3;
+
+int main (int argc, char *argv[])
+{
+	NodeContainer nodes;
+	nodes.Create (2);
+
+	PointToPointHelper ptp;
+	ptp.SetDeviceAttribute ("DataRate", StringValue ("500Kbps"));
+	ptp.SetChannelAttribute ("Delay", StringValue ("5ms"));
+
+	NetDeviceContainer devices;
+	devices = ptp.Install (nodes);
+
+	InternetStackHelper internet;
+	internet.Install (nodes);
+
+	Ipv4AddressHelper ipv4;
+	ipv4.SetBase ("10.1.1.0", "255.255.255.0");
+	Ipv4InterfaceContainer i = ipv4.Assign (devices); 
+
+	BulkSendHelper source ("ns3::TcpSocketFactory", InetSocketAddress 
+(i.GetAddress (1), 9));
+	source.SetAttribute ("MaxBytes", UintegerValue (0));
+	ApplicationContainer sourceapps = source.Install (nodes.Get (0));
+	sourceapps.Start (Seconds (0.0));
+	sourceapps.Stop (Seconds (10.0));
+
+	PacketSinkHelper sink ("ns3::TcpSocketFactory", InetSocketAddress 
+(Ipv4Address::GetAny (), 9));
+	ApplicationContainer sinkapps = sink.Install (nodes.Get (1));
+	sinkapps.Start (Seconds (0.0));
+	sinkapps.Stop (Seconds (10.0));
+
+	AsciiTraceHelper ascii;
+ 	ptp.EnableAsciiAll (ascii.CreateFileStream ("Prg5.tr"));
+ 
+ 	Simulator::Stop (Seconds (10.0));
+	Simulator::Run ();
+ 	Simulator::Destroy ();
+
+	Ptr<PacketSink> sink1 = DynamicCast<PacketSink> (sinkapps.Get (0));
+ 	std::cout << "Total Bytes Received: " << sink1->GetTotalRx () <<
+std::endl;
+}
